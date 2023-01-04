@@ -32,11 +32,11 @@ for i, day in enumerate(os.listdir("./process")):
                     center_lat, center_lon = tuple(float(i) for i in f.readline().split(","))
                     f.close()
 
-                recog = Recognizer(src, center_lat, center_lon, zoom_level, mod)
+                recog = Recognizer(src, center_lat, center_lon, zoom_level, mod, k)
 
-                for i in range(len(recog.colors)):
-                    hsv, mask, result = recog.segregate_traffic(src, i)
-                    recog.process_traffic(mask, "test", i, day_id, time_id)
+                for l in range(len(recog.colors)):
+                    hsv, mask, result = recog.segregate_traffic(src, l)
+                    recog.process_traffic(mask, "test", l, day_id, time_id)
 
 # for i in range(2):
 #     src = cv2.imread("./process/Wednesday/6_0/6_0_0.png")

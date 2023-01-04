@@ -14,7 +14,6 @@ import math
 class Recognizer():
     mercator = None
     mod = None
-    frame = None
     colors = []
 
     def __init__(
@@ -23,9 +22,9 @@ class Recognizer():
             center_latitude,
             center_longitude,
             zoom_level,
-            mod):
+            mod,
+            key):
 
-        self.frame = frame
         height, width, _ = frame.shape
 
         self.mercator = Mercator(
@@ -35,6 +34,10 @@ class Recognizer():
             height,
             zoom_level
         )
+
+        top_left = self.mercator.get_location(0, 0)
+        bottom_right = self.mercator.get_location(width, height)
+        self.coord = Coordinate(top_left, bottom_right, key)
 
         self.mod = mod
 
@@ -76,12 +79,6 @@ class Recognizer():
         return (hsv, mask, result)
 
     def process_traffic(self, src, name, key, day_id, time_id):
-        height, width, _ = self.frame.shape
-        top_left = self.mercator.get_location(0, 0)
-        bottom_right = self.mercator.get_location(width, height)
-
-        coord = Coordinate(top_left, bottom_right, key)
-
         locations = cv2.findNonZero(src)
 
         coordinates: list[Location] = []
@@ -94,4 +91,4 @@ class Recognizer():
                     coordinate = self.mercator.get_location(x, y)
                     coordinates.append(coordinate)
 
-            coord.insert_to_db(coordinates, key, day_id, time_id)
+            self.coord.insert_to_db(coordinates, key, day_id, time_id)
