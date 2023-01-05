@@ -29,16 +29,14 @@ for i, day in enumerate(days):
                 if reverse:
                     index = (len(files)-1)-index
 
-                print(day, filename, index, reverse)
+                src = cv2.imread("./process/"+day+"/"+time+"/"+file)
 
-                # src = cv2.imread("./process/"+day+"/"+time+"/"+file)
-                #
-                # with open(f"./process/{day}/{time}/{filename}.txt") as f:
-                #     center_lat, center_lon = tuple(float(i) for i in f.readline().split(","))
-                #     f.close()
-                #
-                # recog = Recognizer(src, center_lat, center_lon, zoom_level, mod, index)
-                #
-                # for idx in range(len(recog.colors)):
-                #     hsv, mask, result = recog.segregate_traffic(src, idx)
-                #     recog.process_traffic(mask, idx, day_id, time_id)
+                with open(f"./process/{day}/{time}/{filename}.txt") as f:
+                    center_lat, center_lon = tuple(float(i) for i in f.readline().split(","))
+                    f.close()
+
+                recog = Recognizer(src, center_lat, center_lon, zoom_level, mod, index)
+
+                for idx in range(len(recog.colors)):
+                    hsv, mask, result = recog.segregate_traffic(src, idx)
+                    recog.process_traffic(mask, idx, day_id, time_id)
