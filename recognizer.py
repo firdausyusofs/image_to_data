@@ -78,7 +78,7 @@ class Recognizer():
 
         return (hsv, mask, result)
 
-    def process_traffic(self, src, name, key, day_id, time_id):
+    def process_traffic(self, src, key, day_id, time_id):
         locations = cv2.findNonZero(src)
 
         coordinates: list[Location] = []

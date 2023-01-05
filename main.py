@@ -5,50 +5,40 @@ from typing import cast
 from recognizer import Recognizer
 from utils import Utils
 
-# recog = Recognizer(src, center_latitude, center_longitude, 16, 5)
-
-# for a,b,c in os.walk("./process"):
-#     print(a, b, c)
-
 zoom_level = 16
 mod = 5
+cur_reverse = True
 
-for i, day in enumerate(os.listdir("./process")):
-    if day == ".DS_Store":
-        continue
+days = ["Wednesday", "Friday"]
 
+for i, day in enumerate(days):
     day_id = Utils.get_or_create_day(day)
-    for j, time in enumerate(os.listdir("./process/"+day)):
-        if time == ".DS_Store":
-            continue
-
+    for j, time in enumerate(Utils.get_sorted_times("./process/"+day)):
         time_id = Utils.get_or_create_time(time)
-        for k, file in enumerate(os.listdir("./process/"+day+"/"+time)):
+
+        reverse = Utils.check_reverse(cur_reverse, j)
+
+        cur_reverse = reverse
+
+        files = Utils.get_sorted_files("./process/"+day+"/"+time)
+        for k, file in enumerate(files):
             if file.endswith(".png"):
                 filename = file.replace(".png", "")
-                src = cv2.imread("./process/"+day+"/"+time+"/"+file)
+                _, _, index = tuple(int(i) for i in filename.split("_"))
 
-                with open(f"./process/{day}/{time}/{filename}.txt") as f:
-                    center_lat, center_lon = tuple(float(i) for i in f.readline().split(","))
-                    f.close()
+                if reverse:
+                    index = (len(files)-1)-index
 
-                recog = Recognizer(src, center_lat, center_lon, zoom_level, mod, k)
+                print(day, filename, index, reverse)
 
-                for l in range(len(recog.colors)):
-                    hsv, mask, result = recog.segregate_traffic(src, l)
-                    recog.process_traffic(mask, "test", l, day_id, time_id)
-
-# for i in range(2):
-#     src = cv2.imread("./process/Wednesday/6_0/6_0_0.png")
-#     center_lat: float = None
-#     center_lon: float = None
-#
-#     with open(f"./process/Wednesday/6_0/6_0_0.txt") as f:
-#         center_lat, center_lon = tuple(float(i) for i in f.readline().split(","))
-#         f.close()
-#
-#     recog = Recognizer(src, center_lat, center_lon, zoom_level, mod)
-#
-#     for j in range(len(recog.colors)):
-#         hsv, mask, result = recog.segregate_traffic(src, j)
-#         recog.process_traffic(mask, "test", j)
+                # src = cv2.imread("./process/"+day+"/"+time+"/"+file)
+                #
+                # with open(f"./process/{day}/{time}/{filename}.txt") as f:
+                #     center_lat, center_lon = tuple(float(i) for i in f.readline().split(","))
+                #     f.close()
+                #
+                # recog = Recognizer(src, center_lat, center_lon, zoom_level, mod, index)
+                #
+                # for idx in range(len(recog.colors)):
+                #     hsv, mask, result = recog.segregate_traffic(src, idx)
+                #     recog.process_traffic(mask, idx, day_id, time_id)

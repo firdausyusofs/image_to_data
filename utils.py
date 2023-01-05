@@ -1,5 +1,6 @@
 import psycopg2
 import datetime
+import os
 
 
 class Utils():
@@ -65,3 +66,17 @@ class Utils():
         conn.close()
 
         return time_id
+
+    @staticmethod
+    def get_sorted_times(path: str) -> list[str]:
+        key = lambda x: int(x.split("_")[0])
+        return sorted([f for f in os.listdir(path) if not f.startswith(".")], key=key)
+
+    @staticmethod
+    def get_sorted_files(path: str) -> list[str]:
+        key = lambda x: int(x.split("_")[2].replace(".png", ""))
+        return sorted([f for f in os.listdir(path) if not f.startswith(".") and not f.endswith(".txt")], key=key)
+
+    @staticmethod
+    def check_reverse(cur_reverse: bool, key: int) -> bool:
+        return not cur_reverse
